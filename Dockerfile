@@ -43,15 +43,18 @@ RUN gpg --recv-keys D9C4D26D0E604491  &&\
 
 
 # https://aur.archlinux.org/packages/?K=mingw-w64
-RUN yaourt --noconfirm -S mingw-w64-postgresql-libs
 
-RUN pacman --noconfirm -S libx11 pcre
+RUN sudo pacman --noconfirm -S libx11 pcre
 
 RUN yaourt --noconfirm -S ncurses5-compat-libs 
 RUN yaourt --noconfirm -S libtinfo
 
-RUN ln -s /usr/sbin/vim /usr/local/bin/vi
-RUN ln -s /usr/lib/libpcre.so.1.2.6 /usr/lib/libpcre.so.3
+RUN sudo ln -s /usr/sbin/vim /usr/local/bin/vi
+RUN sudo ln -s /usr/lib/libpcre.so.1.2.6 /usr/lib/libpcre.so.3
+
+# https://wiki.archlinux.org/index.php/Building_32-bit_packages_on_a_64-bit_system
+
+#RUN sed -e 's/Architecture=.*/Architecture=i686/g' -i /etc/packman.conf
 
 RUN sudo su -c "echo 'EXPORT=2' >> /etc/yaourtrc"
 
@@ -59,5 +62,24 @@ RUN sudo mv /var/cache/pacman/pkg /var/cache/pacman/pkg.orig
 
 ADD pkg/* /build/pkg/
 RUN sudo mkdir -p /build ; sudo ln -s /build/pkg /var/cache/pacman/pkg 
-RUN sudo pacman -U /var/cache/pacman/pkg/mingw-w64-libiconv-1.14-9-any.pkg.tar.xz
 
+#RUN sudo pacman -U /var/cache/pacman/pkg/mingw-w64-libiconv-1.14-9-any.pkg.tar.xz
+RUN for f in $(ls -1 /var/cache/pacman/pkg/mingw-w64*pkg.tar.xz) ; do sudo pacman -U $f ; done
+
+RUN yaourt --noconfirm -S mingw-w64-postgresql-libs
+
+RUN for pkg in mingw-w64-xzlib mingw-w64-termcap mingw-w64-libiconv mingw-w64-gettext mingw-w64-libxml2 mingw-w64-postgresql-libs; do \
+     ( cd /home/docker ;\ 
+     rm -rf $pkg ; yaourt -G $pkg ;\
+     cd $pkg ;\
+     sed -i -e 's/_architectures=.*/_architectures="i686-w64-mingw32"/g'  PKGBUILD ;\
+     makepkg ;\
+     if [ $pkg == mingw-w64-libxml2 ] ; then
+       # http://stackoverflow.com/questions/15852677/static-and-dynamic-shared-linking-with-mingw
+       # we want static libxml2.a, but mingw takes first libxml2.dll.a if exists
+       sudo rm /usr/i686-w64-mingw32/lib/libxml2.dll.a
+     if
+     sudo pacman --noconfirm -U *.pkg.tar.xz) ||\
+      exit 1 ;\
+    done
+    
