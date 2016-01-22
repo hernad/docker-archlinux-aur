@@ -42,3 +42,22 @@ RUN gpg --recv-keys D9C4D26D0E604491  &&\
     yaourt --noconfirm -S mingw-w64-openssl
 
 
+# https://aur.archlinux.org/packages/?K=mingw-w64
+RUN yaourt --noconfirm -S mingw-w64-postgresql-libs
+
+RUN pacman --noconfirm -S libx11 pcre
+
+RUN yaourt --noconfirm -S ncurses5-compat-libs 
+RUN yaourt --noconfirm -S libtinfo
+
+RUN ln -s /usr/sbin/vim /usr/local/bin/vi
+RUN ln -s /usr/lib/libpcre.so.1.2.6 /usr/lib/libpcre.so.3
+
+RUN sudo su -c "echo 'EXPORT=2' >> /etc/yaourtrc"
+
+RUN sudo mv /var/cache/pacman/pkg /var/cache/pacman/pkg.orig
+
+ADD pkg/* /build/pkg/
+RUN sudo mkdir -p /build ; sudo ln -s /build/pkg /var/cache/pacman/pkg 
+RUN sudo pacman -U /var/cache/pacman/pkg/mingw-w64-libiconv-1.14-9-any.pkg.tar.xz
+
