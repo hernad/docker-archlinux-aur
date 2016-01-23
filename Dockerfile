@@ -34,11 +34,8 @@ RUN mkdir /home/docker/.gnupg &&\
     echo "keyserver-options auto-key-retrieve" >> /home/docker/.gnupg/gpg.conf &&\
     echo ok 
  
-RUN gpg --recv-keys D9C4D26D0E604491  &&\
-    yaourt --noconfirm -S mingw-w64-openssl
 
 # install packer and update databases
-RUN yaourt -Syyua --noconfirm --needed packer 
 
 
 # https://aur.archlinux.org/packages/?K=mingw-w64
@@ -67,9 +64,9 @@ RUN ls /build/pkg ;\
     for f in $(ls -1 /build/pkg/mingw-w64*pkg.tar.xz) ; do sudo pacman --noconfirm -U $f ; done
 
 
-RUN sudo pacman -S --noconfirm gettext mingw-w64-configure
+RUN yaourt --noconfirm -S mingw-w64-configure mingw-w64-pkg-config packer mingw-w64-openssl
 
-RUN echo archlib AUR - yaourt
+RUN sudo pacman -S --noconfirm gettext libxml2 
 
 RUN for pkg in mingw-w64-zlib mingw-w64-termcap mingw-w64-libiconv mingw-w64-gettext mingw-w64-libxml2   mingw-w64-postgresql-libs; do \
 
@@ -79,13 +76,13 @@ RUN for pkg in mingw-w64-zlib mingw-w64-termcap mingw-w64-libiconv mingw-w64-get
      rm -rf $pkg ; yaourt -G $pkg ;\
      cd $pkg ;\
      sed -i -e 's/_architectures=.*/_architectures="i686-w64-mingw32"/g'  PKGBUILD ;\
-     makepkg ;\
-     if [ $pkg == mingw-w64-libxml2 ] ; then \
+     #if [ "$pkg" == "mingw-w64-postgresql-libs" ] ; then \
        # http://stackoverflow.com/questions/15852677/static-and-dynamic-shared-linking-with-mingw \
        # we want static libxml2.a, but mingw takes first libxml2.dll.a if exists \
-       sudo rm /usr/i686-w64-mingw32/lib/libxml2.dll.a ;\
-     fi &&\
-     sudo pacman --noconfirm -U *.pkg.tar.xz) || \
+       # sudo rm /usr/i686-w64-mingw32/lib/libxml2.dll.a ;\
+     #fi 
+     makepkg &&\
+     sudo pacman --noconfirm -U *.pkg.tar.xz ) || \
      exit 1 ;\
-    done
+    done || true
     

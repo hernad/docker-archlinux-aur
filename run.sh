@@ -1,4 +1,7 @@
 #!/bin/bash
 
-docker run -ti -v $(pwd)/build:/build archlinux-aur bash
+HOME_BUILD=$(pwd)/build
+LOCAL_BUILD=${1:-$HOME_BUILD}
+
+docker run -ti -v :/build archlinux-aur bash
 
