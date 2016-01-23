@@ -93,7 +93,7 @@ RUN for pkg in mingw-w64-zlib mingw-w64-termcap mingw-w64-libiconv mingw-w64-get
 
 RUN cd /tmp &&\
     curl -LO https://bintray.com/artifact/download/hernad/archlinux/harbour/harbour-3.4.0-1-x86_64.pkg.tar.xz &&\
-    pacman --noconfirm -Udd harbour-3.4.0-1-x86_64.pkg.tar.xz &&\
+    sudo pacman --noconfirm -Udd harbour-3.4.0-1-x86_64.pkg.tar.xz &&\
     rm /tmp/*pkg.tar.xz
 
 USER root
@@ -107,9 +107,9 @@ RUN pacman --noconfirm -S wine
 
 USER docker
 
-ADD mingw_cross_build.sh /build/
+ADD mingw_cross_build.sh /
 
 RUN echo "/usr/include bothers mingw compilation" &&\
     sudo mv /usr/include /usr/include.orig &&\
-    source  /build/mingw_cross_build &&\
+    source  /mingw_cross_build.sh &&\
     set | grep HB
