@@ -91,8 +91,8 @@ RUN for pkg in mingw-w64-zlib mingw-w64-termcap mingw-w64-libiconv mingw-w64-get
     done || true
     
 
-RUN cd /tmp &&
-    curl -LO https://bintray.com/artifact/download/hernad/archlinux/harbour/harbour-3.4.0-1-x86_64.pkg.tar.xz &&
+RUN cd /tmp &&\
+    curl -LO https://bintray.com/artifact/download/hernad/archlinux/harbour/harbour-3.4.0-1-x86_64.pkg.tar.xz &&\
     package --noconfirm -U harbour-3.4.0-1-x86_64.pkg.tar.xz &&\
     rm /tmp/*pkg.tar.xz
 
