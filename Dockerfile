@@ -54,18 +54,21 @@ RUN sudo ln -s /usr/lib/libpcre.so.1.2.6 /usr/lib/libpcre.so.3
 
 RUN sudo su -c "echo 'EXPORT=2' >> /etc/yaourtrc"
 
-RUN sudo mv /var/cache/pacman/pkg /var/cache/pacman/pkg.orig
 
+RUN yaourt --noconfirm -S mingw-w64-configure mingw-w64-pkg-config packer 
+
+RUN sudo mv /var/cache/pacman/pkg /var/cache/pacman/pkg.orig
 RUN sudo mkdir -p /build/pkg && sudo chown docker -R /build
 COPY pkg/* /build/pkg/
 
 #RUN sudo pacman -U /build/pkg/mingw-w64-libiconv-1.14-9-any.pkg.tar.xz
 RUN echo "==== install local mingw-w64 packages =====" &&\
     ls /build/pkg ;\
-    for f in $(ls -1 /build/pkg/mingw-w64*pkg.tar.xz) ; do sudo pacman --noconfirm -U $f ; done
+    ls -1 /build/pkg/mingw-w64*pkg.tar.xz | xargs sudo pacman -Udd --noconfirm
 
+RUN pkg=mingw-w64-openssl &&\
+    ( ( pacman -Q $pkg 2>/dev/null) ||  yaourt --noconfirm -S $pkg )
 
-RUN yaourt --noconfirm -S mingw-w64-configure mingw-w64-pkg-config packer mingw-w64-openssl
 
 RUN sudo pacman -S --noconfirm gettext libxml2 
 
