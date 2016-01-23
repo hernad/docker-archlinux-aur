@@ -1,7 +1,10 @@
 #!/bin/bash
 
 HOME_BUILD=$(pwd)/build
-LOCAL_BUILD=${1:-$HOME_BUILD}
 
-docker run -ti -v :/build archlinux-aur bash
+BUILD_VOLUME=${1:-$HOME_BUILD}
+
+echo $BUILD_VOLUME
+
+docker run -ti -v $BUILD_VOLUME:/build archlinux-aur bash
 

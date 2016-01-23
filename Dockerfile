@@ -59,8 +59,9 @@ RUN sudo mv /var/cache/pacman/pkg /var/cache/pacman/pkg.orig
 RUN sudo mkdir -p /build/pkg && sudo chown docker -R /build
 COPY pkg/* /build/pkg/
 
-#RUN sudo pacman -U /var/cache/pacman/pkg/mingw-w64-libiconv-1.14-9-any.pkg.tar.xz
-RUN ls /build/pkg ;\
+#RUN sudo pacman -U /build/pkg/mingw-w64-libiconv-1.14-9-any.pkg.tar.xz
+RUN echo "==== install local mingw-w64 packages =====" &&\
+    ls /build/pkg ;\
     for f in $(ls -1 /build/pkg/mingw-w64*pkg.tar.xz) ; do sudo pacman --noconfirm -U $f ; done
 
 
@@ -86,3 +87,26 @@ RUN for pkg in mingw-w64-zlib mingw-w64-termcap mingw-w64-libiconv mingw-w64-get
      exit 1 ;\
     done || true
     
+
+RUN cd /tmp &&
+    curl -LO https://bintray.com/artifact/download/hernad/archlinux/harbour/harbour-3.4.0-1-x86_64.pkg.tar.xz &&
+    package --noconfirm -U harbour-3.4.0-1-x86_64.pkg.tar.xz &&\
+    rm /tmp/*pkg.tar.xz
+
+USER root
+
+RUN echo "[multilib]" >> /etc/pacman.conf &&\
+    echo "Include = /etc/pacman.d/mirrorlist"  >> /etc/pacman.conf  &&\
+    pacman --noconfirm -Syu
+
+RUN pacman --noconfirm -S wine
+
+
+USER docker
+
+ADD mingw_cross_build.sh /build/
+
+RUN echo "/usr/include bothers mingw compilation" &&\
+    sudo mv /usr/include /usr/include.orig &&\
+    source  /build/mingw_cross_build &&\
+    set | grep HB
