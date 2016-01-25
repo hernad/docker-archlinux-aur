@@ -118,4 +118,5 @@ RUN cd /home/docker && curl -L https://bintray.com/artifact/download/hernad/deb/
 #    source  /set_mingw_cross_build.sh &&\
 #    set | grep HB
 
-RUN /build_mingw_harbour.sh
+RUN cd /home/docker/harbour-core &&\
+    /build_mingw_harbour.sh
