@@ -72,7 +72,7 @@ RUN pkg=mingw-w64-openssl &&\
 
 RUN sudo pacman -S --noconfirm gettext libxml2 
 
-RUN for pkg in mingw-w64-zlib mingw-w64-termcap mingw-w64-libiconv mingw-w64-gettext mingw-w64-libxml2   mingw-w64-postgresql-libs; do \
+RUN for pkg in mingw-w64-zlib mingw-w64-termcap mingw-w64-libiconv mingw-w64-gettext mingw-w64-libxml2  mingw-w64-postgresql-libs mingw-w64-pcre; do \
 
      ( pacman -Q $pkg 2>/dev/null) || \
      ( echo build package === $pkg ==== ;\
