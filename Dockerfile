@@ -113,10 +113,8 @@ ADD set_*.sh build_*.sh /
 ENV HB_TAR_VER=3.4.0-7
 RUN cd /home/docker && curl -L https://bintray.com/artifact/download/hernad/deb/harbour_${HB_TAR_VER}.tar.gz | tar -xzf -
 
-#RUN echo "/usr/include bothers mingw compilation" &&\
-#    sudo mv /usr/include /usr/include.orig &&\
-#    source  /set_mingw_cross_build.sh &&\
-#    set | grep HB
-
 RUN cd /home/docker/harbour-core &&\
     /build_mingw_harbour.sh
+
+RUN wine --version
+
