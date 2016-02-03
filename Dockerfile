@@ -103,6 +103,7 @@ RUN echo "[multilib]" >> /etc/pacman.conf &&\
     pacman --noconfirm -Syu
 
 RUN pacman --noconfirm -S wine
+RUN wine notepad; wine --version
 RUN pacman --noconfirm -S zip unzip
 
 USER docker
@@ -116,5 +117,4 @@ RUN cd /home/docker && curl -L https://bintray.com/artifact/download/hernad/deb/
 RUN cd /home/docker/harbour-core &&\
     /build_mingw_harbour.sh
 
-RUN wine --version
 
