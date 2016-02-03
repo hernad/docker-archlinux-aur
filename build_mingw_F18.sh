@@ -12,5 +12,5 @@ hbmk2 F18_string.hbp
 hbmk2 F18_narudzbenica.hbp 
 hbmk2 F18.hbp
 #wine F18.exe --version
-VERSION=`cat VERSION`
-scripts/build_gz.sh 
+VERSION=`cat LATEST_VERSIONS | grep "F18 " | awk '{ print $2 };'`
+scripts/build_gz.sh $VERSION 
